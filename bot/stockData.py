@@ -6,7 +6,7 @@ import tweepy
 
 ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS ETF USD"),
  ("ZPRV.DE", "SPDR MSCI USA Small Cap Value Weighted UCITS ETF"),
-  ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS ETF 1C")]
+  ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS ETF 1C"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS ETF"), ("SXR8","iShares Core S&P 500 UCITS ETF")]
 
 #today = date.today() # real
 #yesterday = getYesterdayDate() # real
