@@ -14,7 +14,9 @@ today = "2019-12-23" # placeholder
 yesterday = "2019-12-20" # placeholder
 
 def main():
-
+#
+#test
+#
     for i in range(len(ownedStocks)):
         
         url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + ownedStocks[i][0] + "&interval=60min&apikey=0OUANH47LJMGA7JA&datatype=json"
