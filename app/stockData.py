@@ -77,6 +77,7 @@ def toString(listOfTuples):
 
 
 def tweet():
+    pritn("test")
     # Authenticate to Twitter
     auth = tweepy.OAuthHandler("fC0HQpLsKkfO6DJKzsLewsELO", "hdomPuOGsF9htlPoIdMLWFU5ozwC51aFbvCCMRm30ePd6bMTyI")
     auth.set_access_token("1209246142023770112-ftY5YILvSztKb5QWVzuwIeoBoXfvNN", "MRjDG89sEjtsIp81uE8okUoXOV1ItDvLlScBPI0ywYfvV")
