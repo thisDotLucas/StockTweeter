@@ -1,9 +1,9 @@
 from datetime import date
 import time
-import schedule
 from urllib.request import urlopen
 import json
 import tweepy
+import schedule
 
 
 ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
@@ -11,8 +11,7 @@ ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
   ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS"),
    ("SXR8.DE","iShares Core S&P 500 UCITS"), ("QDVR.DE", "iShares MSCI USA SRI UCITS")]
 
-today = date.today() # real
-yesterday = getYesterdayDate() # real
+
 #today = "2019-12-12" # placeholder
 #yesterday = "2019-12-11" # placeholder
 
@@ -25,9 +24,13 @@ def scheduleTweets():
     while True:
         schedule.run_pending()
         time.sleep(60)
+        print("Running...")
 
 
 def main():
+
+    today = date.today() # real
+    yesterday = getYesterdayDate() # real
 
     counter = 0
     pointer1 = 0
@@ -141,6 +144,7 @@ def tweet(index1, index2, sendTweet):
 
 
 if __name__ == "__main__":
+    print("Running...")
     scheduleTweets()
 
 
