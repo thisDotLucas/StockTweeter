@@ -1,23 +1,40 @@
 from datetime import date
+import time
 from urllib.request import urlopen
 import json
 import tweepy
 
 
-ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS ETF USD"),
- ("ZPRV.DE", "SPDR MSCI USA Small Cap Value Weighted UCITS ETF"),
-  ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS ETF 1C"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS ETF"), ("SXR8","iShares Core S&P 500 UCITS ETF")]
+ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
+ ("ZPRV.DE", "SPDR MSCI USA Small Cap Value Weighted UCITS"),
+  ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS"),
+   ("SXR8.DE","iShares Core S&P 500 UCITS"), ("QDVR.DE", "iShares MSCI USA SRI UCITS")]
 
 #today = date.today() # real
 #yesterday = getYesterdayDate() # real
-today = "2019-12-23" # placeholder
-yesterday = "2019-12-20" # placeholder
+today = "2019-12-12" # placeholder
+yesterday = "2019-12-11" # placeholder
+
+toBeTweeted = []
+asd = "XD"
 
 def main():
-#
-#test
-#
+
+    counter = 0
+    pointer1 = 0
+    pointer2 = 3
+
     for i in range(len(ownedStocks)):
+        
+        counter += 1
+
+        if(counter > 3):
+            print("Sleeping...")
+            time.sleep(60)
+            counter = 0
+            tweet(pointer1, pointer2, False)
+            pointer1 += 3
+            pointer2 += 3
         
         url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + ownedStocks[i][0] + "&interval=60min&apikey=0OUANH47LJMGA7JA&datatype=json"
         
@@ -25,9 +42,8 @@ def main():
             source = response.read()
         
         data = json.loads(source)
-
         #todayValue = data["Time Series (60min)"][str(today.year) + "-" + str(today.month) + "-" + str(today.day) + " 08:00:00"]["1. open"] #real
-        todayValue = data["Time Series (60min)"][today + " 09:00:00"]["1. open"] #placeholder for testing
+        todayValue = data["Time Series (60min)"][today + " 03:00:00"]["1. open"] #placeholder for testing
         #yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + str(yesterday.month) + "-" + str(yesterday.day) + " 08:00:00"]["1. open"] # real
         yesterdayValue = data["Time Series (60min)"][yesterday + " 03:00:00"]["1. open"] #placeholder for testing
 
@@ -39,7 +55,7 @@ def main():
 
         ownedStocks[i] = tuple(tupleAsList)
     
-    tweet()
+    tweet(pointer1, -1, True)
 
 
 
@@ -68,9 +84,16 @@ def calculateStockDifference(stockX, stockY):
 
 
 
-def toString(listOfTuples):
+def toString(listOfTuples, firstTweet):
 
-    stringToReturn = "@FransmanLucas\nDaily update:\n\n"
+    msg = ""
+
+    if(firstTweet):
+        msg = "Daily update:"
+    else:
+        msg = "..." 
+
+    stringToReturn = "@FransmanLucas\n" + msg + "\n\n"
 
     for tuple in listOfTuples:
         stringToReturn += "\t" + tuple[1] + " has gone " + tuple[-1] + "\n\n"
@@ -79,11 +102,16 @@ def toString(listOfTuples):
 
 
 
-def tweet():
+def tweet(index1, index2, sendTweet):
     
     # Authenticate to Twitter
     auth = tweepy.OAuthHandler("fC0HQpLsKkfO6DJKzsLewsELO", "hdomPuOGsF9htlPoIdMLWFU5ozwC51aFbvCCMRm30ePd6bMTyI")
     auth.set_access_token("1209246142023770112-ftY5YILvSztKb5QWVzuwIeoBoXfvNN", "MRjDG89sEjtsIp81uE8okUoXOV1ItDvLlScBPI0ywYfvV")
+
+    if(index1 == 0):
+        firstTweet = True
+    else:
+        firstTweet = False 
 
     twitter = tweepy.API(auth)
 
@@ -93,8 +121,14 @@ def tweet():
     except:
         print("Error during authentication")
 
+    if(sendTweet):
+        toBeTweeted.insert(0, toString(ownedStocks[index1:index2], firstTweet))
+        for i in range(len(toBeTweeted)):
+            twitter.update_status(toBeTweeted[i])
+    else:
+        toBeTweeted.insert(0, toString(ownedStocks[index1:index2], firstTweet))
 
-    twitter.update_status(toString(ownedStocks))
+
 
 if __name__ == "__main__":
     main()
