@@ -1,5 +1,6 @@
 from datetime import date
 import time
+import schedule
 from urllib.request import urlopen
 import json
 import tweepy
@@ -10,13 +11,21 @@ ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
   ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS"),
    ("SXR8.DE","iShares Core S&P 500 UCITS"), ("QDVR.DE", "iShares MSCI USA SRI UCITS")]
 
-#today = date.today() # real
-#yesterday = getYesterdayDate() # real
-today = "2019-12-12" # placeholder
-yesterday = "2019-12-11" # placeholder
+today = date.today() # real
+yesterday = getYesterdayDate() # real
+#today = "2019-12-12" # placeholder
+#yesterday = "2019-12-11" # placeholder
 
 toBeTweeted = []
-asd = "XD"
+
+def scheduleTweets():
+    
+    schedule.every().day.at("11:00").do(main)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
+
 
 def main():
 
@@ -29,7 +38,6 @@ def main():
         counter += 1
 
         if(counter > 3):
-            print("Sleeping...")
             time.sleep(60)
             counter = 0
             tweet(pointer1, pointer2, False)
@@ -42,10 +50,12 @@ def main():
             source = response.read()
         
         data = json.loads(source)
-        #todayValue = data["Time Series (60min)"][str(today.year) + "-" + str(today.month) + "-" + str(today.day) + " 08:00:00"]["1. open"] #real
-        todayValue = data["Time Series (60min)"][today + " 03:00:00"]["1. open"] #placeholder for testing
-        #yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + str(yesterday.month) + "-" + str(yesterday.day) + " 08:00:00"]["1. open"] # real
-        yesterdayValue = data["Time Series (60min)"][yesterday + " 03:00:00"]["1. open"] #placeholder for testing
+        
+        for i in range(9):
+            todayValue = data["Time Series (60min)"][str(today.year) + "-" + str(today.month) + "-" + str(today.day) + " 0" + i + ":00:00"]["1. open"] #real
+            #todayValue = data["Time Series (60min)"][today + " 03:00:00"]["1. open"] #placeholder for testing
+            yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + str(yesterday.month) + "-" + str(yesterday.day) + " 0" + i + ":00:00"]["1. open"] # real
+            #yesterdayValue = data["Time Series (60min)"][yesterday + " 03:00:00"]["1. open"] #placeholder for testing
 
         tupleAsList = list(ownedStocks[i])
 
@@ -131,6 +141,6 @@ def tweet(index1, index2, sendTweet):
 
 
 if __name__ == "__main__":
-    main()
+    scheduleTweets()
 
 
