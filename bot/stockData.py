@@ -40,7 +40,7 @@ def main():
             pointer1 += 3
             pointer2 += 3
         
-        url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + ownedStocks[i][0] + "&interval=60min&apikey=0OUANH47LJMGA7JA&datatype=json"
+        url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + ownedStocks[i][0] + "&interval=60min&apikey=YOURKEY&datatype=json"
         
         with urlopen(url) as response:
             source = response.read()
@@ -121,8 +121,8 @@ def toString(listOfTuples, firstTweet):
 def tweet(index1, index2, sendTweet):
     
     # Authenticate to Twitter
-    auth = tweepy.OAuthHandler("fC0HQpLsKkfO6DJKzsLewsELO", "hdomPuOGsF9htlPoIdMLWFU5ozwC51aFbvCCMRm30ePd6bMTyI")
-    auth.set_access_token("1209246142023770112-ftY5YILvSztKb5QWVzuwIeoBoXfvNN", "MRjDG89sEjtsIp81uE8okUoXOV1ItDvLlScBPI0ywYfvV")
+    auth = tweepy.OAuthHandler("******", "******")
+    auth.set_access_token("******", "******")
 
     if(index1 == 0):
         firstTweet = True
