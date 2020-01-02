@@ -1,9 +1,11 @@
 from datetime import date
+import datetime
 import time
 from urllib.request import urlopen
 import json
 import tweepy
 import schedule
+import emojis
 
 
 ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
@@ -17,20 +19,11 @@ ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
 
 toBeTweeted = []
 
-def scheduleTweets():
-    
-    schedule.every().day.at("11:00").do(main)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
-        print("Running...")
-
 
 def main():
 
     today = date.today() # real
-    yesterday = getYesterdayDate() # real
+    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1) # real
 
     counter = 0
     pointer1 = 0
@@ -54,14 +47,21 @@ def main():
         
         data = json.loads(source)
         
-        for i in range(9):
-            todayValue = data["Time Series (60min)"][str(today.year) + "-" + str(today.month) + "-" + str(today.day) + " 0" + i + ":00:00"]["1. open"] #real
-            #todayValue = data["Time Series (60min)"][today + " 03:00:00"]["1. open"] #placeholder for testing
-            yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + str(yesterday.month) + "-" + str(yesterday.day) + " 0" + i + ":00:00"]["1. open"] # real
-            #yesterdayValue = data["Time Series (60min)"][yesterday + " 03:00:00"]["1. open"] #placeholder for testing
+        todayValue = ""
+        yesterdayValue = ""
+        try:
+            todayValue = data["Time Series (60min)"][str(today.year) + "-" + addZero(str(today.month)) + "-" + addZero(str(today.day)) + " 11:00:00"]["1. open"] #real
+            #todayValue = data["Time Series (60min)"]["2019-12-30" + " 03:00:00"]["1. open"] #placeholder for testing
+            yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + addZero(str(yesterday.month)) + "-" + addZero(str(yesterday.day)) + " 11:00:00"]["1. open"] # real
+            #yesterdayValue = data["Time Series (60min)"]["2019-12-23" + " 03:00:00"]["1. open"] #placeholder for testing
+        except Exception as error:
+            print(error)
+        
+    
+
 
         tupleAsList = list(ownedStocks[i])
-
+        print(todayValue)
         tupleAsList.append(todayValue)
         tupleAsList.append(yesterdayValue)
         tupleAsList.append(calculateStockDifference(float(todayValue), float(yesterdayValue)))
@@ -70,9 +70,13 @@ def main():
     
     tweet(pointer1, -1, True)
 
+def addZero(str):
+    if len(str) == 1:
+        return "0" + str
+    else:
+        return str
 
-
-def getYesterdayDate():
+def getYesterdayDate(today):
 
     dayToConvert = today.day
     yesterday = str(int(dayToConvert) - 1)
@@ -80,20 +84,19 @@ def getYesterdayDate():
     if(len(yesterday) == 2):
         return yesterday
     else:
-        return "0", yesterday
+        return "0" + yesterday
 
 
 
 def calculateStockDifference(stockX, stockY):
 
     if(stockX == stockY):
-        return "stayed the same."
+        return emojis.encode("stayed the same. :loop:")
     
     elif(stockX < stockY):
-        return "down " + str(1.0 - (stockX/stockY)) + "%."
+        return emojis.encode("gone down " + str(round(((1.0 - (stockX/stockY))*100), 2)) + "%. :chart_with_downwards_trend:")
     else:
-        return "up " + str(1.0 - (stockY/stockX)) + "%."
-        print()
+        return emojis.encode("gone up " + str(round((1.0 - (stockY/stockX))*100, 2)) + "%. :chart_with_upwards_trend:")
 
 
 
@@ -109,7 +112,7 @@ def toString(listOfTuples, firstTweet):
     stringToReturn = "@FransmanLucas\n" + msg + "\n\n"
 
     for tuple in listOfTuples:
-        stringToReturn += "\t" + tuple[1] + " has gone " + tuple[-1] + "\n\n"
+        stringToReturn += "\t" + tuple[1] + " has " + tuple[-1] + "\n\n"
 
     return stringToReturn
 
@@ -145,6 +148,6 @@ def tweet(index1, index2, sendTweet):
 
 if __name__ == "__main__":
     print("Running...")
-    scheduleTweets()
+    main()
 
 
