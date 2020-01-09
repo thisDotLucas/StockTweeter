@@ -11,19 +11,15 @@ import emojis
 ownedStocks = [("2B76.DE", "iShares Automation & Robotics UCITS"),
  ("ZPRV.DE", "SPDR MSCI USA Small Cap Value Weighted UCITS"),
   ("DXET.DE", "Xtrackers Euro STOXX 50 UCITS"), ("IS3N.DE", "iShares Core MSCI EM IMI UCITS"),
-   ("SXR8.DE","iShares Core S&P 500 UCITS"), ("QDVR.DE", "iShares MSCI USA SRI UCITS")]
-
-
-#today = "2019-12-12" # placeholder
-#yesterday = "2019-12-11" # placeholder
+   ("SXR8.DE","iShares Core S&P 500 UCITS"), ("QDVR.DE", "iShares MSCI USA SRI UCITS"), ("SPYX.DE", "SPDR MSCI Emerging Markets Small Cap UCITS"), 
+    ("ZPRX.DE", "SPDR MSCI Europe Small Cap Value Weighted UCITS")]
 
 toBeTweeted = []
 
-
 def main():
 
-    today = date.today() # real
-    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1) # real
+    today = datetime.datetime.now()
+    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
 
     counter = 0
     pointer1 = 0
@@ -49,19 +45,19 @@ def main():
         
         todayValue = ""
         yesterdayValue = ""
-        try:
-            todayValue = data["Time Series (60min)"][str(today.year) + "-" + addZero(str(today.month)) + "-" + addZero(str(today.day)) + " 11:00:00"]["1. open"] #real
-            #todayValue = data["Time Series (60min)"]["2019-12-30" + " 03:00:00"]["1. open"] #placeholder for testing
-            yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + addZero(str(yesterday.month)) + "-" + addZero(str(yesterday.day)) + " 11:00:00"]["1. open"] # real
-            #yesterdayValue = data["Time Series (60min)"]["2019-12-23" + " 03:00:00"]["1. open"] #placeholder for testing
-        except Exception as error:
-            print(error)
+        for j in range(11, 0, -1):
+            try:
+                todayValue = data["Time Series (60min)"][str(today.year) + "-" + addZero(str(today.month)) + "-" + addZero(str(today.day)) + " " + addZero(str(j)) + ":00:00"]["1. open"]
+                yesterdayValue = data["Time Series (60min)"][str(yesterday.year) + "-" + addZero(str(yesterday.month)) + "-" + addZero(str(yesterday.day)) + " " + addZero(str(j)) + ":00:00"]["1. open"]
+                if(len(str(todayValue)) > 15 or len(str(yesterdayValue)) > 15):
+                    continue
+                else:
+                    break
+            except:
+                continue
         
-    
-
 
         tupleAsList = list(ownedStocks[i])
-        print(todayValue)
         tupleAsList.append(todayValue)
         tupleAsList.append(yesterdayValue)
         tupleAsList.append(calculateStockDifference(float(todayValue), float(yesterdayValue)))
@@ -120,9 +116,8 @@ def toString(listOfTuples, firstTweet):
 
 def tweet(index1, index2, sendTweet):
     
-    # Authenticate to Twitter
-    auth = tweepy.OAuthHandler("******", "******")
-    auth.set_access_token("******", "******")
+    auth = tweepy.OAuthHandler("*******", "********")
+    auth.set_access_token("*********", "**********")
 
     if(index1 == 0):
         firstTweet = True
@@ -149,5 +144,8 @@ def tweet(index1, index2, sendTweet):
 if __name__ == "__main__":
     print("Running...")
     main()
+
+
+
 
 
