@@ -18,8 +18,13 @@ toBeTweeted = []
 
 def main():
 
+    if date.today().weekday() == 0:
+        day_jump = 3
+    else:
+        day_jump = 1
+    
     today = datetime.datetime.now()
-    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
+    yesterday = today - datetime.timedelta(days = day_jump)
 
     counter = 0
     pointer1 = 0
